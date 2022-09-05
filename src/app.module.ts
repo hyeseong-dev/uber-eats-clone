@@ -4,9 +4,11 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
+import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 
-
+console.log('*'.repeat(30))
+console.log(process.env.NODE_ENV !== 'prod')
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,8 +33,9 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      synchronize: Boolean(process.env.DB_SYNCHRONIZE),
+      synchronize: process.env.NODE_ENV !== 'prod',
       logging: Boolean(process.env.DB_LOGGING),
+      entities: [Restaurant],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
