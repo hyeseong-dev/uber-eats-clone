@@ -26,6 +26,7 @@ console.log(process.env.NODE_ENV !== 'prod')
         DB_NAME: Joi.string().required(),
         DB_SYNCHRONIZE: Joi.string().required(),
         DB_LOGGING: Joi.string().required(),
+        SECRET_KEY: Joi.string().required(),
       })
     }),
     TypeOrmModule.forRoot({
