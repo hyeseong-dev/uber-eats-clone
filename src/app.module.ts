@@ -37,7 +37,7 @@ console.log(process.env.NODE_ENV !== 'prod')
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: Boolean(process.env.DB_LOGGING),
-      entities: [Restaurant, User],
+      entities: [User],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
