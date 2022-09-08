@@ -8,6 +8,7 @@ import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { User } from './users/entities/user.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 console.log('*'.repeat(30))
 console.log(process.env.NODE_ENV !== 'prod')
@@ -26,7 +27,7 @@ console.log(process.env.NODE_ENV !== 'prod')
         DB_NAME: Joi.string().required(),
         DB_SYNCHRONIZE: Joi.string().required(),
         DB_LOGGING: Joi.string().required(),
-        SECRET_KEY: Joi.string().required(),
+        PRIVATE_KEY: Joi.string().required(),
       })
     }),
     TypeOrmModule.forRoot({
@@ -43,6 +44,9 @@ console.log(process.env.NODE_ENV !== 'prod')
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
+    }),
+    JwtModule.forRoot({
+      privateKey: process.env.PRIVATE_KEY,
     }),
     CommonModule,
     UsersModule,
