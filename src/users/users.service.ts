@@ -17,8 +17,8 @@ import { MailService } from '../mail/mail.service';
 export class UsersService {
     constructor(
         @InjectRepository(User) private readonly users: Repository<User>,
-        @InjectRepository(Verification) private readonly verifications: Repository<Verification>,
-        private readonly config: ConfigService,
+        @InjectRepository(Verification)
+        private readonly verifications: Repository<Verification>,
         private readonly jwtService: JwtService,
         private readonly mailService: MailService
     ) { }
