@@ -29,7 +29,7 @@ export class UsersService {
             if (exists) { return { ok: false, error: 'There is an user with that email already' } }
             const user = await this.users.save(this.users.create({ email, password, role }));
             const verification = await this.verifications.save(this.verifications.create({ user }))
-            // this.mailService.sendVerificationEmail(user.email, verification.code);
+            this.mailService.sendVerificationEmail(user.email, verification.code);
             return { ok: true }
         } catch (e) {
             //make error
@@ -73,8 +73,13 @@ export class UsersService {
                 user.email = email;
                 user.verified = false;
                 const verification = await this.verifications.save(this.verifications.create({ user }))
+                this.mailService.sendVerificationEmail(user.email, verification.code);
             }
-            // this.mailService.sendVerificationEmail(user.email, verification.code);
+            if (password) {
+                user.password = password;
+            }
+            await this.users.save(user);
+            return { ok: true }
         } catch (error) {
             return { ok: false, error: "Could not update profile." }
         }
