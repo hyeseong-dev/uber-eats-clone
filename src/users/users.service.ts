@@ -26,6 +26,7 @@ export class UsersService {
     async createAccount({ email, password, role }: CreateAccountInput): Promise<CreateAccountOutput> {
         try {
             const exists = await this.users.findOne({ where: { email } });
+            console.log(exists);
             if (exists) { return { ok: false, error: 'There is an user with that email already' } }
             const user = await this.users.save(this.users.create({ email, password, role }));
             const verification = await this.verifications.save(this.verifications.create({ user }))
