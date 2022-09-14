@@ -33,7 +33,7 @@ export class UsersService {
             return { ok: true }
         } catch (e) {
             //make error
-            return { ok: true, error: "Could't create account" }
+            return { ok: false, error: "Couldn't create account" }
         }
     }
 
