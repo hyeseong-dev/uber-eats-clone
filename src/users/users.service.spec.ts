@@ -3,6 +3,7 @@ import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { JwtService } from 'src/jwt/jwt.service';
 import { MailService } from 'src/mail/mail.service';
 import { Repository } from 'typeorm';
+import { EditProfileInput } from './dtos/edit-profile.dto';
 import { User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 import { UsersService } from './users.service';
@@ -126,10 +127,10 @@ describe('UsersService', () => {
             const result = await service.login(loginArgs);
 
             expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
-            // expect(usersRepository.findOne).toHaveBeenCalledWith(
-            //     expect.any(Object),
-            //     expect.any(Object),
-            // );
+            expect(usersRepository.findOne).toHaveBeenCalledWith(
+                expect.any(Object),
+                //     expect.any(Object),
+            );
             expect(result).toEqual({
                 ok: false,
                 error: 'User not found',
@@ -174,7 +175,34 @@ describe('UsersService', () => {
         })
     })
 
-    it.todo('findById');
-    it.todo('editProfile');
+    describe('editProfile', () => {
+        it('should change email', async () => {
+            const oldUser = {
+                email: 'bs@old.com',
+                verified: true,
+            };
+            const editProfileArgs = {
+                userId: 1,
+                input: { email: 'bs@new.com' }
+            }
+            const newVerification = { code: "code" };
+            const newUser = {
+                verified: false,
+                email: editProfileArgs.input.email
+            }
+            usersRepository.findOne.mockResolvedValue(oldUser);
+            verificationRepository.create.mockReturnValue(newVerification)
+            verificationRepository.save.mockResolvedValue(newVerification);
+            await service.editProfile(editProfileArgs.userId, editProfileArgs.input)
+
+            expect(usersRepository.findOne).toHaveBeenCalledTimes(1)
+            expect(usersRepository.findOne).toHaveBeenCalledWith({ "where": { "id": editProfileArgs.userId } })
+
+            expect(verificationRepository.create).toHaveBeenCalledWith({ user: newUser })
+            expect(verificationRepository.save).toHaveBeenCalledWith(newVerification)
+
+            expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(newUser.email, newVerification.code)
+        })
+    })
     it.todo('verifyEmail');
 });
