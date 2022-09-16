@@ -92,12 +92,13 @@ export class UsersService {
             });
             if (verification) {
                 verification.user.verified = true;
-                this.users.save(verification.user);
+                await this.users.save(verification.user);
+                await this.verifications.delete(verification.id);
                 return { ok: true }
             }
-            throw new Error();
+            return { ok: false, error: 'Verification not found.' }
         } catch (error) {
-            return { ok: false, error };
+            return { ok: false, error: 'Could not verify email.' };
         }
     }
 }
