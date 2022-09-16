@@ -30,18 +30,23 @@
     "@nestjs/typeorm": "^9.0.1",
     "@types/bcrypt": "^5.0.0",
     "@types/joi": "^17.2.3",
+    "@types/jsonwebtoken": "^8.5.9",
     "apollo-server-express": "^3.10.2",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "cross-env": "^7.0.3",
+    "form-data": "^4.0.0",
+    "got": "^11.8.3",
     "graphql": "^16.6.0",
     "joi": "^17.6.0",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.9"
+    "typeorm": "^0.3.9",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
@@ -67,6 +72,9 @@
     "typescript": "^4.3.5"
   },
   "jest": {
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    },
     "moduleFileExtensions": [
       "js",
       "json",
@@ -81,6 +89,11 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "node_modules",
+      ".entity.ts",
+      ".constants.ts"
+    ]
   }
 }

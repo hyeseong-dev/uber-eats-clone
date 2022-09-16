@@ -1,16 +1,18 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
-import { CommonModule } from './common/common.module';
 import { User } from './users/entities/user.entity';
+import { JwtModule } from './jwt/jwt.module';
+import { JwtMiddleware } from './jwt/jwt.middleware';
+import { AuthModule } from './auth/auth.module';
+import { Verification } from './users/entities/verification.entity';
+import { MailModule } from './mail/mail.module';
 
-console.log('*'.repeat(30))
-console.log(process.env.NODE_ENV !== 'prod')
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,6 +28,10 @@ console.log(process.env.NODE_ENV !== 'prod')
         DB_NAME: Joi.string().required(),
         DB_SYNCHRONIZE: Joi.string().required(),
         DB_LOGGING: Joi.string().required(),
+        PRIVATE_KEY: Joi.string().required(),
+        MAILGUN_API_KEY: Joi.string().required(),
+        MAILGUN_DOMAIN_NAME: Joi.string().required(),
+        MAILGUN_FROM_EMAIL: Joi.string().required(),
       })
     }),
     TypeOrmModule.forRoot({
@@ -36,20 +42,34 @@ console.log(process.env.NODE_ENV !== 'prod')
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
-      logging: Boolean(process.env.DB_LOGGING),
-      entities: [User],
+      logging: !Boolean(process.env.DB_LOGGING),
+      entities: [User, Verification],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
+      context: ({ req }) => ({ user: req['user'] })
     }),
-    CommonModule,
+    JwtModule.forRoot({
+      privateKey: process.env.PRIVATE_KEY,
+    }),
+    MailModule.forRoot({
+      apiKey: process.env.MAILGUN_API_KEY,
+      domain: process.env.MAILGUN_DOMAIN_NAME,
+      fromEmail: process.env.MAILGUN_FROM_EMAIL,
+    }),
     UsersModule,
+    AuthModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtMiddleware).forRoutes({ path: '/graphql', method: RequestMethod.POST });
+  }
+}
 
 
 
