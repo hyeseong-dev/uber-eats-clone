@@ -17,10 +17,10 @@ import { MailModule } from './mail/mail.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'dev' ? './src/envs/.env.dev' : '.src/envs/.env.test',
+      envFilePath: process.env.NODE_ENV === 'dev' ? './src/envs/.env.dev' : './src/envs/.env.test',
       ignoreEnvFile: process.env.NODE_ENV === '.src/envs/.env.prod',
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string().valid('dev', 'prod').required(),
+        NODE_ENV: Joi.string().valid('dev', 'prod', 'test').required(),
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.string().required(),
         DB_USERNAME: Joi.string().required(),
@@ -42,7 +42,7 @@ import { MailModule } from './mail/mail.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
-      logging: !Boolean(process.env.DB_LOGGING),
+      logging: process.env.DB_LOGGING !== 'prod' && process.env.NODE_ENV !== 'test',
       entities: [User, Verification],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
