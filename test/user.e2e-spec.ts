@@ -2,9 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { DataSource, DataSourceOptions, getConnection } from 'typeorm';
+import { DataSource, DataSourceOptions, getConnection, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Verification } from 'src/users/entities/verification.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { number } from 'joi';
 
 
 jest.mock('got', () => {
@@ -22,6 +24,7 @@ const testUser = {
 
 describe('UserModule (e2e)', () => {
   let app: INestApplication;
+  let userRepository: Repository<User>;
   let jwtToken: string;
 
   beforeAll(async () => {
@@ -30,6 +33,7 @@ describe('UserModule (e2e)', () => {
     }).compile();
 
     app = module.createNestApplication();
+    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
     await app.init();
   });
   afterAll(async () => {
@@ -119,11 +123,7 @@ describe('UserModule (e2e)', () => {
           })
           .expect(200)
           .expect(res => {
-            const {
-              body: {
-                data: { login },
-              },
-            } = res;
+            const { login } = res.body.data;
             expect(login.ok).toBe(true);
             expect(login.error).toBe(null);
             expect(login.token).toEqual(expect.any(String));
@@ -149,19 +149,68 @@ describe('UserModule (e2e)', () => {
           })
           .expect(200)
           .expect(res => {
-            const {
-              body: {
-                data: { login },
-              },
-            } = res;
+            const { login } = res.body.data;
             expect(login.ok).toBe(false);
             expect(login.error).toBe('Wrong password');
             expect(login.token).toBe(null);
           });
       });
     });
+    describe('userProfile', () => {
+      let userId; number;
+      beforeAll(async () => {
+        const [user] = await userRepository.find();
+        userId = user.id;
+      });
+      it("should see a user's profile", () => {
+        return request(app.getHttpServer())
+          .post(GRAPHQL_ENDPOINT)
+          .set('X-JWT', jwtToken)
+          .send({
+            query: `
+          {
+            userProfile(userId: ${userId}){
+              ok
+              error
+              user {
+                id
+              }
+            }
+          }`})
+          .expect(200)
+          .expect(res => {
+            const { ok, error, user: { id } } = res.body.data.userProfile;
+            expect(ok).toBe(true);
+            expect(error).toBe(null);
+            expect(id).toBe(userId);
+          });
+      })
+      it('should not find a profile', () => {
+        return request(app.getHttpServer())
+          .post(GRAPHQL_ENDPOINT)
+          .set('X-JWT', jwtToken)
+          .send({
+            query: `
+            {
+              userProfile(userId:666){
+                ok
+                error
+                user {
+                  id
+                }
+              }
+            }`
+          })
+          .expect(200)
+          .expect(res => {
+            const { ok, error, user } = res.body.data.userProfile;
+            expect(ok).toBe(false);
+            expect(error).toBe('User Not Found');
+            expect(user).toBe(null);
+          })
+      })
+    })
     it.todo('me')
-    it.todo('UserProfile')
     it.todo('createAccount')
     it.todo('login ')
     it.todo('editProfile ')
