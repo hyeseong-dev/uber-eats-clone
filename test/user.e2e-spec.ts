@@ -249,9 +249,51 @@ describe('UserModule (e2e)', () => {
           })
       })
     })
-    it.todo('createAccount')
-    it.todo('login ')
-    it.todo('editProfile ')
+    describe('editProfile', () => {
+      const NEW_EMAIL = 'nico@new.com';
+      it('should change email', () => {
+        return request(app.getHttpServer())
+          .post(GRAPHQL_ENDPOINT)
+          .set('X-JWT', jwtToken)
+          .send({
+            query: `
+              mutation {
+                editProfile(input: {
+                  email: "${NEW_EMAIL}",
+                }){
+                  ok
+                  error
+                }
+              }
+            `
+          })
+          .expect(200)
+          .expect(res => {
+            const { ok, error } = res.body.data.editProfile
+            expect(ok).toBe(true);
+            expect(error).toBe(null);
+          })
+      })
+      it('should have new email', () => {
+        return request(app.getHttpServer())
+          .post(GRAPHQL_ENDPOINT)
+          .set('X-JWT', jwtToken)
+          .send({
+            query: `
+            {
+             me {
+                  email 
+                }
+            }
+            `
+          })
+          .expect(200)
+          .expect(res => {
+            const email = res.body.data.me.email;
+            expect(email).toBe(NEW_EMAIL);
+          })
+      })
+    })
     it.todo('verifyEmail')
   });
 })
