@@ -1,7 +1,8 @@
+The Backend of UberEats project
 # uber eats 
 
 the backend of uber eats clone
-## user model:
+## User model:
 
 - id
 - createdAt
@@ -18,3 +19,10 @@ the backend of uber eats clone
 - edit profile
 - verify profile
 
+
+
+## Restaurant Model
+- name
+- category
+- address
+- coverImage
