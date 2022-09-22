@@ -13,20 +13,11 @@ export class RestaurantService {
     constructor(
         @InjectRepository(Restaurant)
         private readonly restaurants: Repository<Restaurant>,
-        private readonly categories: CategoryRepository,
-    ) { }
 
-    async getOrCreate(name: string): Promise<Category> {
-        const categoryName = name.trim().toLowerCase();
-        const categorySlug = categoryName.replace(/ /g, '-');
-        let category = await this.categories.findOne({ where: { slug: categorySlug } });
-        if (!category) {
-            category = await this.categories.save(
-                this.categories.create({ slug: categorySlug, name: categoryName })
-            )
-        }
-        return category;
-    }
+        @InjectRepository(Category)
+        private readonly categories: CategoryRepository,
+
+    ) { }
 
     async createRestaurant(
         owner: User,
@@ -35,7 +26,7 @@ export class RestaurantService {
         try {
             const newRestaurant = this.restaurants.create(createRestaurantInput);
             newRestaurant.owner = owner;
-            const category = await this.getOrCreate(createRestaurantInput.categoryName);
+            const category = await this.categories.getOrCreate(createRestaurantInput.categoryName);
             newRestaurant.category = category;
             await this.restaurants.save(newRestaurant);
             return { ok: true }
