@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
 import { Restaurant } from './entities/restaurant.entity';
 import { Category } from './entities/category.entity';
+import { EditRestaurantInput, EditRestaurantOutput } from './dtos/edit-restaurant.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -36,5 +37,12 @@ export class RestaurantService {
         } catch (error) {
             return { ok: false, error: 'Could not create restaurant' };
         }
+    }
+
+    async editRestaurant(
+        owner: User,
+        editRestaurantInput: EditRestaurantInput,
+    ): Promise<EditRestaurantOutput> {
+        return
     }
 }

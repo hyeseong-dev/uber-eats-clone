@@ -11,7 +11,7 @@ import { User } from '../../users/entities/user.entity';
 export class Restaurant extends CoreEntity {
 
   @Field(type => String)
-  @Column()
+  @Column({ unique: true })
   @IsString()
   @Length(5)
   name: string;
