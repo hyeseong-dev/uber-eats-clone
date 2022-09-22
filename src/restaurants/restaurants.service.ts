@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
-import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
+import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
 import { Restaurant } from './entities/restaurant.entity';
 
 @Injectable()
@@ -12,14 +12,16 @@ export class RestaurantService {
         private readonly restaurants: Repository<Restaurant>
     ) { }
 
-    getAll(): Promise<Restaurant[]> {
-        return this.restaurants.find()
-    }
-    createRestaurant(createRestaurantDto: CreateRestaurantDto): Promise<Restaurant> {
-        const newRestaurant = this.restaurants.create(createRestaurantDto);
-        return this.restaurants.save(newRestaurant);
-    }
-    updateRestaurant({ id, data }: UpdateRestaurantDto) {
-        return this.restaurants.update(id, { ...data });
+    async createRestaurant(
+        owner: User,
+        createRestaurantInput: CreateRestaurantInput,
+    ): Promise<CreateRestaurantOutput> {
+        try {
+            const newRestaurant = this.restaurants.create(createRestaurantInput);
+            await this.restaurants.save(newRestaurant);
+            return { ok: true }
+        } catch (error) {
+            return { ok: false, error: 'Could not create restaurant' };
+        }
     }
 }
