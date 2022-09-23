@@ -28,7 +28,8 @@ the backend of uber eats clone
 - coverImage
 
 ----
-- See Categories
+- Delete Restaurant (Clear)
+- See Categories(Clear)
 - See Restaurants by Category (pagination)
 - See Restaurant
 
@@ -38,3 +39,5 @@ the backend of uber eats clone
 - Create Dish
 - Edit Dish
 - Delete Dish 
+
+---- 

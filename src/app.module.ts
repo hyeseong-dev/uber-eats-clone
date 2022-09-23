@@ -14,7 +14,6 @@ import { Verification } from './users/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
 import { Category } from './restaurants/entities/category.entity';
 import { RestaurantsModule } from './restaurants/restaurants.module';
-import { CategoryRepository } from './restaurants/repositories/category.repository';
 
 @Module({
   imports: [
