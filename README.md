@@ -26,3 +26,18 @@ the backend of uber eats clone
 - category
 - address
 - coverImage
+
+----
+- Delete Restaurant (Clear)
+- See Categories(Clear)
+- See Restaurants by Category (pagination)
+- See Restaurant
+
+- Edit Restaurant
+- Delete Restaurant
+
+- Create Dish
+- Edit Dish
+- Delete Dish 
+
+---- 
