@@ -106,4 +106,14 @@ export class RestaurantService {
     countRestaurants(category: Category) {
         return this.restaurants.count({ where: { category: { id: category.id } } })
     }
+
+    async findCategoryBySlug({ slug }: any) {
+        try {
+            const category = await this.categories.findOne({ where: { slug: slug }, relations: ['restaurants'] })
+            if (!category) return { ok: false, error: 'Category not found' };
+            return { ok: true, category }
+        } catch {
+            return { ok: false, error: "Could not load category" }
+        }
+    }
 }
