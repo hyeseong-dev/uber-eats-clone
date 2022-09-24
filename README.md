@@ -35,6 +35,7 @@ the backend of uber eats clone
 
 - Edit Restaurant
 - Delete Restaurant
+- Search Restaurant
 
 - Create Dish
 - Edit Dish
