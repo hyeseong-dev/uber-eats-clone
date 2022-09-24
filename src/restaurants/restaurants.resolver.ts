@@ -9,6 +9,7 @@ import { EditRestaurantOutput, EditRestaurantInput } from './dtos/edit-restauran
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from './dtos/delete-restaurant.dto';
 import { Category } from './entities/category.entity';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
+import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 
 @Resolver(of => Restaurant)
 export class RestaurantResolver {
@@ -54,5 +55,11 @@ export class CategoryResolver {
   @Query(type => AllCategoriesOutput)
   allCategories(): Promise<AllCategoriesOutput> {
     return this.restaurantService.allCategories();
+  }
+
+  @Query(type => CategoryOutput)
+  category(@Args() categoryInput: CategoryInput): Promise<CategoryOutput> {
+    console.log(categoryInput)
+    return this.restaurantService.findCategoryBySlug(categoryInput);
   }
 }
