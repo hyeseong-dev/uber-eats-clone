@@ -15,6 +15,8 @@ import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
 import { SearchRestaurantInput, SearchRestaurantOutput } from './dtos/search-restaurant.dto';
 import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
 import { Dish } from './entities/dish.entity';
+import { EditDishInput, EditDishOutput } from './dtos/edit-dish.dto';
+import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -197,6 +199,42 @@ export class RestaurantService {
         } catch (error) {
             console.log(error);
             return { ok: false, error: "Could not create dish" }
+        }
+    }
+    async checkDishOwner(ownderId: number, dishId: number) {
+    }
+
+    async editDish(
+        owner: User,
+        editDishInput: EditDishInput,
+    ): Promise<EditDishOutput> {
+        try {
+            const dish = await this.dishes.findOne({ where: { id: editDishInput.dishId }, relations: ['restaurant'] })
+            if (!dish) return { ok: false, error: "Dish not found" }
+            if (dish.restaurant.ownerId !== owner.id) return { ok: false, error: "You can't do that" }
+            await this.dishes.save([
+                {
+                    id: editDishInput.dishId,
+                    ...editDishInput,
+                }
+            ])
+            return { ok: true };
+        } catch {
+            return { ok: false, error: 'Could not delete dish' };
+        }
+    }
+    async deleteDish(
+        owner: User,
+        { dishId }: DeleteDishInput
+    ): Promise<DeleteDishOutput> {
+        try {
+            const dish = await this.dishes.findOne({ where: { id: dishId }, relations: ['restaurant'] })
+            if (!dish) return { ok: false, error: "Dish not found" };
+            if (dish.restaurant.ownerId !== owner.id) return { ok: false, error: "You can't do that" };
+            await this.dishes.delete(dishId);
+            return { ok: true };
+        } catch {
+            return { ok: false, error: "Could not delete dish" };
         }
     }
 }
