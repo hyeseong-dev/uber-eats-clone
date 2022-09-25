@@ -35,9 +35,19 @@ the backend of uber eats clone
 
 - Edit Restaurant
 - Delete Restaurant
+- Search Restaurant
 
 - Create Dish
 - Edit Dish
 - Delete Dish 
 
 ---- 
+## Dish 
+- Create Dish
+- Edit Dish
+- Delete Dish
+
+- Orders CRUD
+- Orders Subscription (Owner, Customer, Deliver)
+
+- Payments (CRON)
