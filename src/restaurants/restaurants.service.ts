@@ -13,6 +13,8 @@ import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
 import { SearchRestaurantInput, SearchRestaurantOutput } from './dtos/search-restaurant.dto';
+import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
+import { Dish } from './entities/dish.entity';
 
 @Injectable()
 export class RestaurantService {
@@ -22,6 +24,9 @@ export class RestaurantService {
 
         @InjectRepository(Category)
         private readonly categories: CategoryRepository,
+
+        @InjectRepository(Dish)
+        private readonly dishes: Repository<Dish>,
 
     ) { }
 
@@ -148,7 +153,7 @@ export class RestaurantService {
 
     async findRestaurantById({ restaurantId }: RestaurantInput): Promise<RestaurantOutput> {
         try {
-            const restaurant = await this.restaurants.findOne({ where: { id: restaurantId } })
+            const restaurant = await this.restaurants.findOne({ where: { id: restaurantId }, relations: ['menu'] })
             if (!restaurant)
                 return { ok: false, error: "Restaurant not found" };
             return { ok: true, restaurant }
@@ -174,6 +179,24 @@ export class RestaurantService {
             }
         } catch {
             return { ok: false, error: "Could not find restaurants" };
+        }
+    }
+
+    async createDish(
+        owner: User,
+        createDishInput: CreateDishInput,
+    ): Promise<CreateDishOutput> {
+        try {
+            const restaurant = await this.restaurants.findOne({
+                where:
+                    { id: createDishInput.restaurantId }
+            });
+            if (!restaurant) return { ok: false, error: "Restaurant not found" }
+            if (owner.id !== restaurant.ownerId) return { ok: false, error: "You can't do that" }
+            return { ok: true }
+        } catch (error) {
+            console.log(error);
+            return { ok: false, error: "Could not create dish" }
         }
     }
 }
