@@ -19,6 +19,8 @@ export class OrderService {
     ): Promise<CreateOrderOutput> {
         const restaurant = await this.restaurant.findOne({ where: { id: restaurantId } })
         if (!restaurant) return { ok: false, error: 'Restaurant not found' }
+        const order = await this.orders.save(this.orders.create({ customer, restaurant }))
+
     }
 
 

@@ -7,7 +7,7 @@ import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 
 @InputType('DishChoiceInputType', { isAbstract: true })
 @ObjectType()
-class DishChoice {
+export class DishChoice {
     @Field(type => String)
     name: string;
 
