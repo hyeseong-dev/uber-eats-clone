@@ -12,7 +12,7 @@ export class OrderService {
         @InjectRepository(Order)
         private readonly orders: Repository<Order>,
         @InjectRepository(OrderItem)
-        private readonly orderItem: Repository<OrderItem>,
+        private readonly orderItems: Repository<OrderItem>,
         @InjectRepository(Restaurant)
         private readonly restaurant: Repository<Restaurant>,
         @InjectRepository(Dish)
@@ -29,6 +29,13 @@ export class OrderService {
         const order = await this.orders.save(this.orders.create({ customer, restaurant }))
         items.forEach(async item => {
             const dish = await this.dishes.findOne({ where: { id: item.dishId } })
+            if (!dish) return {}
+            await this.orderItems.save(
+                this.orderItems.create({
+                    dish,
+                    options: item.options
+                })
+            );
         })
 
     }
