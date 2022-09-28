@@ -47,10 +47,10 @@ export class RestaurantResolver {
     return this.restaurantService.deleteRestaurant(owner, deleteRestaurantInput)
   }
 
-  @Query(returns => RestaurantOutput)
+  @Query(returns => RestaurantsOutput)
   restaurants(
     @Args('input') restaurantsInput: RestaurantsInput,
-  ): Promise<RestaurantOutput> {
+  ): Promise<RestaurantsOutput> {
     return this.restaurantService.allRestaurants(restaurantsInput)
   }
 
