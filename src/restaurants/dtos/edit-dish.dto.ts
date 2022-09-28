@@ -1,5 +1,5 @@
 import { Field, InputType, Int, ObjectType, PartialType, PickType } from '@nestjs/graphql';
-import { CoreOutput } from 'src/common/dtos/output.dto';
+import { CoreOutput } from '../../common/dtos/output.dto';
 import { Dish } from '../entities/dish.entity';
 
 @InputType()

@@ -195,6 +195,9 @@ export class RestaurantService {
             });
             if (!restaurant) return { ok: false, error: "Restaurant not found" }
             if (owner.id !== restaurant.ownerId) return { ok: false, error: "You can't do that" }
+            await this.dishes.save(
+                this.dishes.create({ ...createDishInput, restaurant }),
+            );
             return { ok: true }
         } catch (error) {
             console.log(error);
